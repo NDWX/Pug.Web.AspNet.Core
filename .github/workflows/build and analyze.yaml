@@ -9,7 +9,7 @@ on:
 
 env:
   BuildConfiguration: debug
-  CoreProject: src/Pug.Core/Pug.Core.csproj
+  CoreProject: src/Pug.Web.AspNet.Core/Pug.Web.AspNet.Core.csproj
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
       - name: SonarCloud Scan
         run: |
           dotnet tool install --global dotnet-sonarscanner
-          dotnet sonarscanner begin /o:ndwx /k:NDWX_Pug.Core /d:sonar.login=${{secrets.SONAR_TOKEN}}  /d:sonar.host.url=https://sonarcloud.io
+          dotnet sonarscanner begin /o:ndwx /k:NDWX_Pug.Web.AspNet.Core /d:sonar.login=${{secrets.SONAR_TOKEN}}  /d:sonar.host.url=https://sonarcloud.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

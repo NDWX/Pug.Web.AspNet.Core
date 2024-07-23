@@ -8,7 +8,7 @@ on:
 
 env:
   BuildConfiguration: release
-  CoreProject: src/Pug.Core/Pug.Core.csproj
+  CoreProject: src/Pug.Web.AspNet.Core/Pug.Web.AspNet.Core.csproj
   PackagesBaseFolder: packages
 
 jobs:
