@@ -1,0 +1,45 @@
+name: build and analyze
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'support/**'
+
+env:
+  BuildConfiguration: debug
+  CoreProject: src/Pug.Core/Pug.Core.csproj
+
+jobs:
+  build:
+    name: Build Projects
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      # Authenticates packages to push to GPR
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x' # SDK Version to use.
+          source-url: https://nuget.pkg.github.com/PugCS/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: SonarCloud Scan
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          dotnet sonarscanner begin /o:ndwx /k:NDWX_Pug.Core /d:sonar.login=${{secrets.SONAR_TOKEN}}  /d:sonar.host.url=https://sonarcloud.io
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build Core project
+        run: dotnet build --nologo --configuration ${{env.BuildConfiguration}} ${{env.CoreProject}}
+
+      - name: End Sonar scan
+        run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
